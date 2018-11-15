@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Regex Playground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <style>
+        #test-info {
+            border: 1px solid #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        "use strict";
+        let currentFieldValue = 1;
+
+        function checkMatches() {
+            let textInput = document.getElementById('textInput');
+            let testInfo = document.getElementById('testInfo');
+            let regexFields = document.querySelectorAll('input[id^="regexField-"]');
+            let patterns = [];
+
+            for(let field of regexFields) {
+                try
+                {
+                    if(field.value.trim() === '') {
+                        continue;
+                    }
+                    
+                    patterns.push({
+                        regexNumber: field.id.substring(field.id.indexOf("-") + 1),
+                        pattern: new RegExp(field.value.trim(), "gi"), // Global and ignore case
+                    });
+                } catch { 
+                    // Simply does not create the regex
+                }    
+            }
+
+            if(textInput.value === '' || (patterns.length === 0)) {
+                testInfo.innerHTML = `<p>Waiting user input...</p>`;
+                return;
+            }
+
+             testInfo.innerHTML = '';
+
+             for(let i = 0; i < patterns.length; i++) {
+                 let pattern = patterns[i];
+                 let match = textInput.value.match(pattern.pattern) || 'no match';
+                 let isPassing = pattern.pattern.test(textInput.value);
+                 let passingTest = (isPassing) ? `<span class='badge badge-success'>true</span>`
+                                               : `<span class='badge badge-danger'>false</span>`;                                          
+
+                 testInfo.innerHTML += `<strong>Pattern #${pattern.regexNumber}:</strong> ${pattern.pattern.source}
+                                        <br/>
+                                        <strong>Passing:</strong> ${passingTest}
+                                        <br/>
+                                        <strong>Match(es):</strong> ${match}
+                                        <br/>
+                                       `;
+
+                if(i < (patterns.length - 1)) {
+                    testInfo.innerHTML += '<br>';
+                } 
+             }
+        }
+
+        function addRegexField() {
+            currentFieldValue++;
+            let regexFields = document.getElementById('regexFields');
+            let regexDiv = regexFields.firstElementChild.cloneNode(true);
+            regexDiv.firstElementChild.id = 'regexField-' + currentFieldValue;
+            regexDiv.firstElementChild.value = '';
+            
+            regexFields.appendChild(regexDiv);
+        }
+
+        window.onload = function(e) {
+            checkMatches();
+        };
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="mt-2 p-2 bg-dark text-white rounded">
+            <h1>Regex Playground</h1>
+            <p>Type something below to use as test input.</p>
+        </div>
+        <form>
+            <div class="form-group mt-3">
+                <input id="textInput" type="text" class="form-control" placeholder="Input something to test here..."
+                    aria-describedby="textInput" onkeyup="checkMatches()">
+            </div>
+            <div id="regexFields">
+                <div class="form-group mt-3">
+                    <input id="regexField-1" type="text" class="form-control" placeholder="Add some regex pattern here..."
+                        aria-describedby="regexField-1" onkeyup="checkMatches()">
+                </div>
+            </div>
+            <button type="button" class="mb-3 btn btn-primary" onclick="addRegexField()">
+                Add regex field
+            </button>
+            <div id="testInfo" class="p-2 bg-dark text-white rounded">
+                <p>Waiting user input...</p>
+            </div>
+        </form>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
